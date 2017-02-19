@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+        <link rel="stylesheet" href="./lib/css/bootstrap.css" media="screen" title="no title" charset="utf-8">
+        <link rel="stylesheet" href="./default.css" title="no title" charset="utf-8">
+
+        <title>Messages</title>
+    </head>
+    <body ng-app="msg" ng-controller="main" ng-strict-di>
+
+        <label>Start Date</label><input type="datetime" ng-model="data.start_date" class="form-control" />
+        <label>End Date</label><input type="datetime" ng-model="data.end_date" class="form-control" />
+
+        <label>Search</label><input ng-model="data.keyword" class="form-control" />
+        <label>Exact Match?
+            <input type="checkbox" ng-model="data.keyword_exact">
+        </label>
+
+        <label for="singleSelect"> Search Type </label><br>
+            <select name="singleSelect" ng-model="type" class="form-control">
+                <option value="date">Date</option>
+                <option value="keyword">Keyword</option>
+            </select><br>
+
+        <button class="btn btn-default" ng-click="getData()">Go</button>
+
+        <span>{{ messages.length }} results</span>
+
+        <div class="texts">
+            <div ng-repeat="msg in messages | limitTo : 40 : startVal "><span ng-class="{'me-sent': msg.sender === 'Me'}">{{ msg.message }}</span></div>
+        </div>
+
+        <button class="btn btn-default" ng-click="prevPage()">Prev</button>
+        <button class="btn btn-default" ng-click="nextPage()">Next</button>
+
+
+        <script src="./lib/js/jquery.js"></script>
+        <script src="./lib/js/bootstrap.js"></script>
+        <script src="./lib/js/angular.js"></script>
+        <script src="./script.js"></script>
+        <script src="./services.js"></script>
+    </body>
+</html>
