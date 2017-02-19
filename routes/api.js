@@ -53,8 +53,69 @@ module.exports = function(app, express, db) {
         var date = new Date(req.params.d);
         var tomorrow = new Date(req.params.d);
         tomorrow.setDate(tomorrow.getDate()+1);
-        
+
         messages.find({ date: { "$gte": date, "$lt": tomorrow } }).toArray(function(err, docs) {
+            res.send(docs);
+        });
+    });
+
+
+    apiRouter.get('/aggregate', function(req, res) {
+        console.log("Aggregating");
+
+
+        var mQuery = [
+            {
+                $group: {
+                    _id: "$message",
+                    count: { $sum: 1 }
+                }
+            },
+            {
+                $sort: { count: -1 }
+            },
+            {
+                $match: {
+                    count: {
+                        "$gt": 1
+                    }
+                }
+            }
+        ];
+
+        if(req.query.date) {
+            /*
+             * $dayOfYear
+             * $dayOfMonth
+             * $dayOfWeek
+             * $year
+             * $month
+             * $week
+             * $hour
+             * $minute
+             * $second
+            */
+
+            mQuery = [
+                {
+                    "$group": {
+                        _id: {},
+                        count: { $sum: 1 }
+                    }
+                },
+                {
+                    $sort: { }
+                }
+            ];
+
+            mQuery[0].$group._id[req.query.date] = {};
+            mQuery[0].$group._id[req.query.date]["$" + req.query.date] = "$date";
+            mQuery[1].$sort["_id." + req.query.date] = 1;
+
+        }
+        console.log("QUERY\n", JSON.stringify(mQuery));
+
+        messages.aggregate(mQuery).toArray(function(err, docs) {
             res.send(docs);
         });
     });
